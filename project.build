@@ -14,8 +14,8 @@ else
 	BL_FLASH_PROGRAM = ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand-macos
 	cmake_generator = "Unix Makefiles"
 	else
-	CMAKE = box64 $(BL_SDK_BASE)/tools/cmake/bin/cmake
-	BL_FLASH_PROGRAM = box64 ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand-ubuntu
+	CMAKE = $(BL_SDK_BASE)/tools/cmake/bin/cmake
+	BL_FLASH_PROGRAM = ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand-ubuntu
 	cmake_generator = "Unix Makefiles"
 	endif
 endif
