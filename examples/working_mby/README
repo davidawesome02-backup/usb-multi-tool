@@ -1,4 +1,4 @@
-# based off commit 2f6477f7e8882a01b4c8651d4676de2a3fa33c76 to bouffalo sdk on APR 23 2023 ["SDK link"](https://github.com/bouffalolab/bouffalo_sdk/tree/2f6477f7e8882a01b4c8651d4676de2a3fa33c76), with help from baselalsayeh on discord / baselsayeh on github
+# based off commit 2f6477f7e8882a01b4c8651d4676de2a3fa33c76 to bouffalo sdk on APR 23 2023 ["SDK link"](https://github.com/bouffalolab/bouffalo_sdk/tree/2f6477f7e8882a01b4c8651d4676de2a3fa33c76), with help from baselalsayeh [@baselsayeh](https://github.com/baselsayeh) and ^K [@chiefnoah](https://github.com/chiefnoah)
 
 # please download and include [linux toolchain](https://github.com/bouffalolab/toolchain_gcc_t-head_linux) [windows toolchain](https://github.com/bouffalolab/toolchain_gcc_t-head_windows) 's bin folder in your path or folow the [getting started guide](https://bl-mcu-sdk.readthedocs.io/zh-cn/latest/get_started/get_started.html)
 

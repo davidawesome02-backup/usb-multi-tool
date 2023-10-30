@@ -4,7 +4,7 @@
 ________
 
 ## This project is not the best, so just report errors if you find them, I will try to fix
-## Made with massive help from baselalsayeh
+## Made with massive help from baselalsayeh [@baselsayeh](https://github.com/baselsayeh) and ^K [@chiefnoah](https://github.com/chiefnoah)
 
 
 
