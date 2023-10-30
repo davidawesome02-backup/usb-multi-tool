@@ -1,0 +1,80 @@
+
+# avoid 'Entering|Leaving directory' messages
+ifndef VERBOSE
+MAKEFLAGS += --no-print-directory
+endif
+
+ifeq ($(OS),Windows_NT)
+CMAKE = $(BL_SDK_BASE)/tools/cmake/bin/cmake.exe
+BL_FLASH_PROGRAM = ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand.exe
+cmake_generator = "MinGW Makefiles"
+else
+	ifeq ($(shell uname),Darwin)
+	CMAKE = cmake # use user cmake
+	BL_FLASH_PROGRAM = ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand-macos
+	cmake_generator = "Unix Makefiles"
+	else
+	CMAKE = box64 $(BL_SDK_BASE)/tools/cmake/bin/cmake
+	BL_FLASH_PROGRAM = box64 ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand-ubuntu
+	cmake_generator = "Unix Makefiles"
+	endif
+endif
+
+# The command to remove a file.
+RM = $(CMAKE) -E remove_directory
+
+CPU_ID ?=
+CONFIG_USB_HS ?=y
+CONFIG_ROMAPI ?=y
+CONFIG_DEBUG ?=y
+CONFIG_TLSF ?=y
+COMX ?=COM5
+BAUDRATE ?=2000000
+BOARD_DIR ?=
+
+#cmake definition config
+cmake_definition+= -DCROSS_COMPILE=${CROSS_COMPILE}
+cmake_definition+= -DCHIP=$(CHIP)
+cmake_definition+= -DCPU_ID=$(CPU_ID)
+cmake_definition+= -DBOARD=$(BOARD)
+cmake_definition+= -DBOARD_DIR=$(BOARD_DIR)
+cmake_definition+= -DCONFIG_DEBUG=$(CONFIG_DEBUG)
+cmake_definition+= -DCONFIG_ROMAPI=$(CONFIG_ROMAPI)
+cmake_definition+= -DCONFIG_USB_HS=$(CONFIG_USB_HS)
+cmake_definition+= -DCONFIG_COMX=$(COMX)
+cmake_definition+= -DCMAKE_EXPORT_COMPILE_COMMANDS=OFF
+cmake_definition+= -DCONFIG_TLSF=$(CONFIG_TLSF)
+
+build:Makefile
+	$(CMAKE) -S . -B build -G $(cmake_generator) $(cmake_definition)
+	cd build && make -j8 && make combine
+
+ninja:Makefile
+	$(CMAKE) -S . -B build -G Ninja $(cmake_definition)
+	cd build && ninja && ninja combine
+
+clean::
+	$(RM) build
+
+menuconfig::
+	python $(BL_SDK_BASE)/tools/kconfig/menuconfig.py
+
+flash:
+	$(BL_FLASH_PROGRAM) \
+	--interface=uart \
+	--baudrate=$(BAUDRATE) \
+	--port=$(COMX) \
+	--chipname=$(CHIP) \
+	--cpu_id=$(CPU_ID) \
+	--config=flash_prog_cfg.ini
+
+efuse:
+	$(BL_FLASH_PROGRAM) \
+	--interface=uart \
+	--baudrate=$(BAUDRATE) \
+	--port=$(COMX) \
+	--chipname=$(CHIP) \
+	--efuse=build/build_out/efusedata.bin
+
+.PHONY:build clean menuconfig ninja
+

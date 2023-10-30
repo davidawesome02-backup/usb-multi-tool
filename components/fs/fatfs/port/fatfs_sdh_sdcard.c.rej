@@ -1,0 +1,7 @@
+--- components/fs/fatfs/port/fatfs_sdh_sdcard.c	2023-07-07 11:28:28.022911744 +0300
++++ components/fs/fatfs/port/fatfs_sdh_sdcard.c	2023-07-07 12:46:42.651982786 +0300
+@@ -122,4 +129,4 @@
+     disk_driver_callback_init(DEV_SD, &SDH_DiskioDriver);
+ }
+ 
+-#endif+#endif

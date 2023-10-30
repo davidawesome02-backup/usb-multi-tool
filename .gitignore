@@ -1,0 +1,12 @@
+**/__pycache__
+**/build
+*.pyc
+/.project
+/.cproject
+/.clang-format
+**/.vscode
+/CKLink_BL616.launch
+/CKLink_BL702.launch
+/CKLink_BL808.launch
+.github
+/docs

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uart console</title>
+    <style>
+
+        code {
+            font-family:'Lucida Console',monospace;
+            background-color: black;
+            color: white;
+            white-space-collapse: preserve;
+            font-size: 1em; 
+            line-height: 1.5em; 
+            padding: 0.25em 0;
+        }
+        .code_background {
+            background-color: black;
+        }
+        .top_part {
+            margin: 10px;
+        }
+        body, html {
+            margin:0px;
+            padding:0px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top_part">
+        <h1>Basic usb uart console</h1>
+        <button onclick="connect()" id="connect_button">Connect</button>
+    </div>
+
+    <div class="code_background">
+        <code id="console_output"></code>
+    </div>
+
+
+    <script>
+        connected = false;
+        current_parse_expression_buffer = ""
+
+        function connected_func() {
+            connected = true;
+            document.getElementById("connect_button").innerHTML = "clear"
+            code_block.textContent = "-- connected --"
+        }
+
+
+        
+
+        code_block = document.getElementById("console_output");
+
+        function create_span_with_color() {
+            span = document.createElement("span")
+            span.style.color = last_span[1][0]
+            span.style.backgroundColor = last_span[1][1]
+            last_span[0] = span
+            code_block.appendChild(span)
+            return span
+        }
+        last_span = [null,["white","black"]];
+
+        function read(port_reader) {
+            if (last_span[0] == null) {
+                create_span_with_color();
+            }
+            port_reader.read().then(({done,value}) => {
+                // console.log(value)
+                console.log(value)
+                at_bottom = (document.body.scrollHeight-visualViewport.height-window.scrollY) < 5
+
+                // console.log(at_bottom)
+
+                current_text_buffer = text_decoder.decode(value);
+                // parse_text_buffer()
+
+                for (i=0;i<current_text_buffer.length;i++) {
+                    current_char = current_text_buffer[i]
+                    if (current_parse_expression_buffer.length != 0 || current_char == "\x1b") {
+                        current_parse_expression_buffer += current_char
+
+                        // cpe = current_parse_expression_buffer;
+                        
+                        if (!(current_char == "\x1b" || current_char == "[" || current_char == ";" || (current_char-0) >= 0)) {
+                            parse_expression()
+                            console.log(current_parse_expression_buffer,current_parse_expression_buffer.length,current_char)
+                            current_parse_expression_buffer = ""
+                        }
+                        // console.log()
+                        
+                    } else {
+                        last_span[0].textContent += current_char
+                    }
+
+                    
+                }
+
+                // last_span[0].textContent += text_decoder.decode(value);
+                // code_block.textContent += text_decoder.decode(value);
+
+                if (at_bottom) {
+                    setTimeout(() => {
+                        // console.log("scroll")
+                        document.documentElement.scroll({"behavior":"instant","top":document.documentElement.scrollHeight+10})
+                    },10);
+                }
+
+                read(port_reader)
+            })
+        }
+
+        
+        function parse_expression() {
+            if (current_parse_expression_buffer.endsWith("m")) {
+                current_parse_expression_buffer = current_parse_expression_buffer.slice(2,-1)
+                expression = current_parse_expression_buffer.split(";")
+                for (let o in expression) {
+                    expression[o] = expression[o]-0
+                }
+                if (expression.length == 1) {
+                    if (expression[0] >= 90)
+                        expression[0] -= 90-30
+                    if (expression[0] < 50)
+                        last_span[1][Math.floor((expression[0]-30)/10)] = ["black","red","green","yellow","blue","magenta","cyan","white","",""][(expression[0] % 10)]
+
+                    if (expression[0] == 39 || expression[0] == 0) {
+                        last_span[1][0] = "white"
+                    }
+                    if (expression[0] == 49 || expression[0] == 0) {
+                        last_span[0][0] = "black"
+                    }
+                }
+                if (expression.length == 5) {
+                    last_span[1][(expression[0]-38)/10] = `rgb(${expression[2]},${expression[3]},${expression[4]})`
+                }
+                create_span_with_color()
+            }
+        }
+
+        function connect() {
+            if (connected) {
+                code_block.textContent = "-- Cleared -- \n"
+                return;
+            }
+            navigator.serial.requestPort().then((port) => {
+                text_decoder = new TextDecoder();
+                port.open({"baudRate":2000000}).then(() => {
+                    connected_func()
+                    port_reader = port.readable.getReader()
+                    read(port_reader)
+                })
+            })
+        }
+
+        navigator.serial.getPorts().then((ports) => {
+            console.log(ports)
+            for (port_index in ports) {
+                port = ports[port_index]
+                text_decoder = new TextDecoder();
+                port.open({"baudRate":2000000}).then(() => {
+                    connected_func()
+                    port_reader = port.readable.getReader()
+                    read(port_reader)
+                })
+            }
+        })
+    
+    </script>
+</body>
+</html>
