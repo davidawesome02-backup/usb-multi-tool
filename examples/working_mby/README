@@ -2,34 +2,34 @@
 
 # please download and include [linux toolchain](https://github.com/bouffalolab/toolchain_gcc_t-head_linux) [windows toolchain](https://github.com/bouffalolab/toolchain_gcc_t-head_windows) 's bin folder in your path \(and make it executable\) or folow the [getting started guide](https://bl-mcu-sdk.readthedocs.io/zh-cn/latest/get_started/get_started.html) 
 
-How to use the bl808 based usb passthrough:
+How to use the bl808 based USB passthrough:
 
     FLASHING -
-        `make CHIP=bl808 BOARD=bl808dk CPU_ID=m0` -- Will generate the build files, and compile
-        `timeout -k 19 17 make flash CHIP=bl808 BOARD=bl808dk CPU_ID=m0 COMX=/dev/ttyUSB0` -- will flash on ttyusb0, with 2M baud
-        `python3 generate_uf2.py "./build/build_out/usbd_msc_ram_bl808_m0.bin" "./output.uf2"` -- will take compiled files and make a working uf2 for the flash mode
+        `make CHIP=bl808 BOARD=bl808dk CPU_ID=m0` -- Generate the build files and compile
+        `timeout -k 19 17 make flash CHIP=bl808 BOARD=bl808dk CPU_ID=m0 COMX=/dev/ttyUSB0` -- Flash on /dev/ttyUSB0, with 2M baud
+        `python3 generate_uf2.py "./build/build_out/usbd_msc_ram_bl808_m0.bin" "./output.uf2"` -- Read compiled files and write a working uf2 for the flash mode
 
-    Mode deffinitions - 
-        The main system is controled with 5 pins;
+    Mode definitions - 
+        The main system is controlled with 5 pins;
             1-4 binary image selector
             5 Special button
-
-        switching 1-4 will change the current mode
+LED
+        Switching 1-4 will change the current mode
         In mode 0, your whole sd card will be passed through
-        When in mode 0, pressing the special button for 5 seconds will cause it to repartition the sd card, or check and resize image files
+        When in mode 0, pressing the special button for 5 seconds will cause it to repartition the sd card or check and resize image files
 
 
-        Pin deffinitions:
+        Pin definitions:
             -----
                 Default state high, pull to ground to switch
 
-                6,7,30,31   -   Used to select mode, will be read in binary as 0b[6][7][30][31]
+                6,7,30,31   -   Used to select mode, will be read in binary as 0b[6][7][30][31] - Pin31 is D0, Pin30 is D1, Pin7 is D2, and Pin 6 is D3.
                 28          -   Special button pin
             -----
 
             -----
                 LED
-                21,22,23    - used to set led color (will pull high to 3.3v when enabled)
+                21,22,23    - used to set LED color. Will pull high to 3.3v when enabled. To set the bits active, you must pull them high to 3.3V.
                     21      - Red
                     22      - Green
                     23      - Blue
@@ -43,7 +43,7 @@ How to use the bl808 based usb passthrough:
     Using programs
         Specify your hid program file in your config.ini
 
-        to use usb operations, start with below code, to avoid problems with usb not connecting instantly
+        to use USB operations, start with below code, to avoid problems with USB not connecting instantly
         ```
         hi
         wu
@@ -53,15 +53,15 @@ How to use the bl808 based usb passthrough:
         commands:
         hi - hid init
         hd - hid disable
-        wu - wait usb connection
+        wu - wait USB connection
         gs - general sleep      -   <ms>
         gj - general jump       -   <delta_lines>
-        ls - led set            -   <red> <green> <blue> // All are eithor 0 or 1, use 1 for on, 0 for off
+        ls - LED set            -   <red> <green> <blue> // All are eithor 0 or 1, use 1 for on, 0 for off
         ks - keyboard string    -   <modifiers> <resend_count> <string>
         ki - keyboard input     -   <type> <resend_count> <modifiers> [data]{x6} // Type is 0 for hid codes and 1 for ascii characters as data
         mi - mouse input        -   <x> <y> <scroll> <buttons>
         
-        //NEW
+        // NEW in October 2023
         cj - conditional jump   -   <delta_lines>
 
 
@@ -72,28 +72,28 @@ How cache mode works
     
     These files are used to describe how the ox64 should forward reads at any given time;
     cache_table.bin -   the format is stored in little endian, using a 4 byte structure at any given time.
-                        When a read request comes in with cacheing on, we jump into this file at the sector provided being multiplied by 4.
+                        When a read request comes in with caching on, we jump into this file at the sector provided being multiplied by 4.
                         We then read 4 bytes, and get the offset in cache buffer.bin where we read the actual data.
-                        If this value returned was 0, we instead read from the origonal file
+                        If this value returned was 0, we instead read from the original file
 
     Cache_buffer.bin-   Stored as raw binary data, in chunks of blocksize as defined in the config, will be read at offsets provided by cache_table.bin
 
 
-    Both thse files can be removed at any time, they are only used and created at run time.
+    Both these files can be removed at any time, they are only used and created at run time.
 
 
 
 Getting started
--    1   -   Connect a multi color led, or 3 colored leds with pins 21 for red vcc, 22 for green, and 23 for blue
+-    1   -   Connect a multi color LED, or 3 colored leds with pins 21 for red VCC, 22 for green, and 23 for blue
 -    2   -   Plug in a sd card
 -    3   -   If the sd card is not blank, you can start reading when in mode 0.
--    4   -   If you are in mode 0 and want to use any functions other than usb pass through; hold the special button for 5 seconds
--    5   -   When it turns blue, wait until it turns back to green, this will mean partitioning and config creation suceeded.
--    6   -   If the usb is still connected, you will see the new files after they remounted
--    7   -   Upload images in place of the temp iso files created; you can change the config.ini to use their name, or rename the files
--    8   -   it is suggested to unmount before changing modes if you made any changed, but this is not required in any way, and will most likely be fine
--    9   -   If your image is not passing through as a valid image, check if it is a iso 9660 image, if it is, instead, folow step 10, then read *
--    10  -   To force a resize of a image proviede, in your config file, specify a size you wish to use in blocks, and block size, this will be multiplied to get your total count
+-    4   -   If you are in mode 0 and want to use any functions other than USB pass through; hold the special button for 5 seconds
+-    5   -   When it turns blue, wait until it turns back to green; this will mean partitioning and config creation suceeded.
+-    6   -   If the USB is still connected, you will see the new files after it is remounted
+-    7   -   Upload images in place of the temp ISO files created; you can change the config.ini to use their name or rename the files
+-    8   -   It is suggested to unmount before changing modes if you made any changed, but this is not required in any way. It will most likely be fine
+-    9   -   If your image is not passing through as a valid image, check if it is a ISO 9660 image, if it is, instead, folow step 10, then read *
+-    10  -   To force a resize of the image provieded, in your config file specify the size you wish to use in blocks. Thisblock size|will be multiplied to get your total count.
 
 
---    Use a program like rufus to flash the iso in 9660 format to the device while in a non 0 mode, you should specify a size sutable for this to be done. Rufus will convert the iso 9660 to a raw ddable image.
+--    Use a program like rufus to flash the ISO in ISO 9660 format to the device while in a non 0 mode, you should specify a size sutable for this to be done. Rufus will convert the ISO 9660 to a raw image that can be read with 'dd'.
