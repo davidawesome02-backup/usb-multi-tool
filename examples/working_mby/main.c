@@ -8,8 +8,8 @@
 //	Define used header files to allow access to functions used inside the program
 
 #define DBG_TAG "MAIN"
-#define async_writes true
-#define async_fs_writes true
+#define async_writes false //true THIS IS BROKEN RIGHT NOW; DONT USE
+#define async_fs_writes false //true THIS IS BROKEN RIGHT NOW; DONT USE
 #define flash_mode true
 #define help_files true
 
