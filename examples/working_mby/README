@@ -29,10 +29,10 @@ LED
 
             -----
                 LED
-                21,22,23    - used to set LED color. Will pull high to 3.3v when enabled. To set the bits active, you must pull them high to 3.3V.
-                    21      - Red
+                23,22,21    - used to set LED color. Will pull high to 3.3v when enabled. To set the bits active, you must pull them high to 3.3V.
+                    23      - Red
                     22      - Green
-                    23      - Blue
+                    21      - Blue
             -----
 
         Color meanings (general operation):
@@ -84,7 +84,7 @@ How cache mode works
 
 
 Getting started
--    1   -   Connect a multi color LED, or 3 colored leds with pins 21 for red VCC, 22 for green, and 23 for blue
+-    1   -   Connect a multi color LED, or 3 colored leds with pins 23 for red VCC, 22 for green, and 21 for blue
 -    2   -   Plug in a sd card
 -    3   -   If the sd card is not blank, you can start reading when in mode 0.
 -    4   -   If you are in mode 0 and want to use any functions other than USB pass through; hold the special button for 5 seconds

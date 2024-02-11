@@ -8,8 +8,8 @@
 //	Define used header files to allow access to functions used inside the program
 
 #define DBG_TAG "MAIN"
-#define async_writes true
-#define async_fs_writes true
+#define async_writes false//true
+#define async_fs_writes false//true
 #define flash_mode true
 #define help_files true
 
@@ -248,11 +248,11 @@ void set_led_color(char color) {
 	bflb_gpio_reset(gpio, GPIO_PIN_23);
 	
 	if (color & LED_COLOR_RED)
-		bflb_gpio_set(gpio, GPIO_PIN_21);
+		bflb_gpio_set(gpio, GPIO_PIN_23);
 	if (color & LED_COLOR_BLUE)
 		bflb_gpio_set(gpio, GPIO_PIN_20);
 	if (color & LED_COLOR_GREEN)
-		bflb_gpio_set(gpio, GPIO_PIN_23);
+		bflb_gpio_set(gpio, GPIO_PIN_21);
 }
 
 

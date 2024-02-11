@@ -419,6 +419,8 @@ void usbd_configure_done_callback(void)
 /* Keyboard interupt recived*/
 void usbd_keyb_hid_int_callback(uint8_t ep, uint32_t nbytes)
 {
+    // printf("keyboard data ep: %d \r\ndata: \r\n",ep);
+
     // Say we are ready to send more data
 	keyb_hid_state = HID_STATE_IDLE;
 }
